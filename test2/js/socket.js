@@ -9,21 +9,9 @@ console.log('editor', editor);
 editor.addEventListener('update', reportChanges);
 
 function reportChanges(e) {
-    const image = context.getImageData(0, 0, e.canvas.width, e.canvas.height);
-    //const image = context.getImageData(0, 0, 109, 150);
-    console.log(image.data.length)
-    const binary = Uint8Array.from(image.data);
-    console.log('binary.length', binary.length)
-    const step = binary.length / 32;
-    const buff = [];
-    for (let i = 0; i < 32; i++) {
-        buff.push(binary.slice(i * step, (i + 1) * step));
-    }
-    Promise.all(buff.map(item => ws.send(item)))
-        .then(results => {
-            console.log('promise res', results);
-        });
-
+    e.canvas.toBlob((blob) => {
+        ws.send(blob);
+    });
 }
 
 function wsOpen() {
